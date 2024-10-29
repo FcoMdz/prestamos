@@ -40,3 +40,6 @@
 # System files
 /Front/.DS_Store
 /Front/Thumbs.db
+
+#Backend
+/Backend/node_modules
