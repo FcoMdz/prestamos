@@ -1,42 +1,42 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+/Front/dist
+/Front/tmp
+/Front/out-tsc
+/Front/bazel-out
 
 # Node
 /Front/node_modules
-npm-debug.log
-yarn-error.log
+/Front/npm-debug.log
+/Front/yarn-error.log
 
 # IDEs and editors
-.idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+/Front/.idea/
+/Front/.project
+/Front/.classpath
+/Front/.c9/
+/Front/*.launch
+/Front/.settings/
+/Front/*.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
+/Front/.vscode/*
+/Front/!.vscode/settings.json
+/Front/!.vscode/tasks.json
+/Front/!.vscode/launch.json
+/Front/!.vscode/extensions.json
+/Front/.history/*
 
 # Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
+/Front/.angular/cache
+/Front/.sass-cache/
+/Front/connect.lock
+/Front/coverage
+/Front/libpeerconnection.log
+/Front/testem.log
+/Front/typings
 
 # System files
-.DS_Store
-Thumbs.db
+/Front/.DS_Store
+/Front/Thumbs.db

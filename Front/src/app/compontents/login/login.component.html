@@ -1,1 +1,26 @@
-<p>login works!</p>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
+      <h2 class="text-center mb-4">Iniciar Sesión</h2>
+  
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group mb-3">
+          <label for="username">Usuario:</label>
+          <input id="username" formControlName="username" type="text" class="form-control" />
+          <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="text-danger">
+            El nombre de usuario es obligatorio.
+          </div>
+        </div>
+  
+        <div class="form-group mb-3">
+          <label for="password">Contraseña:</label>
+          <input id="password" formControlName="password" type="password" class="form-control" />
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-danger">
+            La contraseña es obligatoria y debe tener al menos 4 caracteres.
+          </div>
+        </div>
+  
+        <button type="submit" class="btn btn-primary w-100" [disabled]="loginForm.invalid">Iniciar Sesión</button>
+      </form>
+    </div>
+  </div>
+  
