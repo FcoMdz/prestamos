@@ -1,1 +1,30 @@
-<p>historial works!</p>
+<div class="container mt-5">
+    <h2 class="mb-4">Solicitudes de Petición</h2>
+    <table class="table table-striped table-bordered">
+      <thead class="table-header">
+        <tr>
+          <th>Fecha de Petición</th>
+          <th>Monto Pedido</th>
+          <th>Aprobado</th>
+          <th>Detalles</th>
+        </tr>
+      </thead>
+      <tbody class="table-body">
+        <tr *ngFor="let item of data">
+          <td>{{ item.fechaPeticion }}</td>
+          <td>{{ item.montoPedido | currency }}</td>
+          <td>
+            <span [class]="item.aprobado ? 'badge bg-success' : 'badge bg-danger'">
+              {{ item.aprobado ? 'Sí' : 'No' }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-info btn-sm" (click)="mostrarDetalles(item.detalles)">
+              Ver detalles
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

@@ -1,0 +1,20 @@
+/* Asegura que la página use toda la altura de la ventana */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* El main crecerá para ocupar el espacio disponible */
+  main {
+    flex-grow: 1;
+  }
+  
+  /* Estilo del footer para mantenerlo al fondo */
+  .footer {
+    background-color: #343a40; /* Color de fondo oscuro para el footer */
+    color: white;
+    text-align: center;
+    padding: 1rem;
+  }
+  
