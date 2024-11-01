@@ -1,1 +1,71 @@
-<p>cotizacion works!</p>
+<div class="container mt-5">
+    <!-- Formulario para ingresar los datos -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Formulario de Cálculo</h3>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="calculoForm" (ngSubmit)="onSubmit()">
+          <div class="form-group mt-3">
+            
+            <div class="row">
+                <div class="col-4">
+                   
+                    <label for="valor2">Monto</label>
+                    <input type="number" id="monto" class="form-control" formControlName="monto">
+                    <div *ngIf="calculoForm.get('monto')?.invalid && calculoForm.get('monto')?.touched" class="text-danger">
+                      Este campo es obligatorio.
+                    </div>
+                </div>
+                <div class="col-4">
+                    <label for="valor1">Periodo (meses)</label>
+                    <input type="number" id="meses" class="form-control" formControlName="meses">
+                    <div *ngIf="calculoForm.get('meses')?.invalid && calculoForm.get('meses')?.touched" class="text-danger">
+                      Este campo es obligatorio.
+                    </div>
+                    
+                </div>
+                <div class="col-4">
+
+                    <label for="valor2">Interés</label>
+                    <input type="number" id="interes" class="form-control" formControlName="interes">
+                    <div *ngIf="calculoForm.get('interes')?.invalid && calculoForm.get('interes')?.touched" class="text-danger">
+                      Este campo es obligatorio.
+                    </div>
+                </div>
+            </div>
+          </div>
+  
+          <div class="form-group mt-3">
+           
+          </div>
+  
+          <button type="submit" class="btn btn-primary mt-4" [disabled]="calculoForm.invalid">Calcular</button>
+        </form>
+      </div>
+    </div>
+  
+    <!-- Tabla de Resultados -->
+    <div class="card mt-5" *ngIf="mostrarResultados">
+      <div class="card-header">
+        <h3>Resultados de los Cálculos</h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Operación</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let resultado of resultados">
+              <td>{{ resultado.operacion }}</td>
+              <td>{{ resultado.resultado }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+

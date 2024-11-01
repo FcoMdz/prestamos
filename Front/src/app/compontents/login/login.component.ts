@@ -10,10 +10,21 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  loginForm: FormGroup;
-
+  loginFormEmpleado: FormGroup;
+  loginFormCliente: FormGroup;
   constructor(private fb: FormBuilder) {
-    this.loginForm = this.fb.group({
+    this.loginFormEmpleado = this.fb.group({
+      username: ['', [Validators.required, Validators.email]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(4),
+          Validators.pattern('^(?=.*[A-Z])(?=.*[0-9]).+$') // Al menos una mayúscula y un número
+        ]
+      ]
+    });
+    this.loginFormCliente = this.fb.group({
       username: ['', [Validators.required, Validators.email]],
       password: [
         '',
@@ -26,9 +37,19 @@ export class LoginComponent {
     });
   }
 
-  onSubmit() {
-    if (this.loginForm.valid) {
-      const { username, password } = this.loginForm.value;
+  onSubmitEmpleado() {
+    if (this.loginFormEmpleado.valid) {
+      const { username, password } = this.loginFormEmpleado.value;
+
+      alert(`Bienvenido, ${username}!`);
+    } else {
+      alert('Por favor completa los campos correctamente.');
+    }
+  }
+
+  onSubmitCliente() {
+    if (this.loginFormCliente.valid) {
+      const { username, password } = this.loginFormCliente.value;
       alert(`Bienvenido, ${username}!`);
     } else {
       alert('Por favor completa los campos correctamente.');

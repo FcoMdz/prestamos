@@ -12,6 +12,7 @@ export const routes: Routes = [
     { path: 'historial', component: HistorialComponent }, // Ruta para el componente para realiar cotizaciones
     { path: 'login', component: LoginComponent }, // Ruta para el componente para realiar cotizaciones
     { path: 'signup', component: SingupComponent }, // Ruta para el componente para realiar cotizaciones
+    { path: 'cotizacion', component: CotizacionComponent},
     { path: '**', component: LandingComponent }, // Manejo de rutas no encontradas (404)
 
 ];
