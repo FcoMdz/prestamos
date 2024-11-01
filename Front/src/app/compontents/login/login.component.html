@@ -19,7 +19,12 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100" [disabled]="loginFormCliente.invalid">Iniciar Sesión</button>
+      <button type="submit" class="btn btn-primary w-100" [disabled]="loginFormCliente.invalid || loadingCliente || loadingEmpleado">
+        @if(this.loadingCliente){
+          <span class="spinner-border spinner-border-sm" role="status"></span>
+        }
+        Iniciar Sesión
+      </button>
     </form>
   </div>
   <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
@@ -42,8 +47,13 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100" [disabled]="loginFormEmpleado.invalid">Iniciar Sesión</button>
+      <button type="submit" class="btn btn-primary w-100" [disabled]="loginFormEmpleado.invalid || loadingEmpleado || loadingCliente">
+        @if(this.loadingEmpleado){
+          <span class="spinner-border spinner-border-sm" role="status"></span>
+        }
+        Iniciar Sesión
+
+      </button>
     </form>
   </div>
 </div>
-  

@@ -16,6 +16,8 @@ export class LoginComponent {
   loginFormEmpleado: FormGroup;
   loginFormCliente: FormGroup;
   loginEvent = new EventEmitter<void>();
+  loadingEmpleado:boolean = false;
+  loadingCliente:boolean = false;
 
 
   constructor(
@@ -50,6 +52,7 @@ export class LoginComponent {
 
   onSubmitEmpleado() {
     if (this.loginFormEmpleado.valid) {
+      this.loadingEmpleado = true;
       const { username, password } = this.loginFormEmpleado.value;
       this.prestamosService.loginEmpleado(username, password).then((res) => {
         if(res){
@@ -66,6 +69,8 @@ export class LoginComponent {
           this.alertService.error("Error de conexión")
         }
 
+      }).finally(()=>{
+        this.loadingEmpleado = false;
       });
 
     } else {
@@ -76,6 +81,7 @@ export class LoginComponent {
   onSubmitCliente() {
     if (this.loginFormCliente.valid) {
       const { username, password } = this.loginFormCliente.value;
+      this.loadingCliente = true;
       this.prestamosService.loginCliente(username, password).then((res) => {
         if(res){
           if(res.success){
@@ -90,6 +96,8 @@ export class LoginComponent {
           this.alertService.error("Error de conexión")
         }
 
+      }).finally(()=>{
+        this.loadingCliente = false;
       });
     } else {
       this.alertService.danger("Es necesario completar los campos correctamente antes de continuar")

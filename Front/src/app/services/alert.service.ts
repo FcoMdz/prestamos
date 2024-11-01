@@ -11,7 +11,7 @@ export class AlertService {
   private alert = Swal.mixin({
     toast: true,
     timer: 5000,
-    position: 'bottom-end',
+    position: 'top',
     showConfirmButton: false,
     timerProgressBar: true,
     didOpen: (toast) => {

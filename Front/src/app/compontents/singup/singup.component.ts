@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { PrestamosServiceService, Pais, Estado, Municipio, Registro } from '../../services/prestamos-service.service';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-singup',
@@ -9,14 +11,14 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
   templateUrl: './singup.component.html',
   styleUrl: './singup.component.scss'
 })
-export class SingupComponent {
+export class SingupComponent implements OnInit{
   registerForm: FormGroup;
+  sendingRegister:boolean = false;
+  municipios:Municipio[] = [];
+  estados:Estado[] = []
+  paises:Pais[] = [];
 
-  municipios = ['Municipio 1', 'Municipio 2', 'Municipio 3'];
-  estados = ['Estado 1', 'Estado 2', 'Estado 3'];
-  paises = ['País 1', 'País 2', 'País 3'];
-
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private prestamosService:PrestamosServiceService, private alertService:AlertService) {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       nombre: ['', [Validators.required, Validators.minLength(2)]],
@@ -50,8 +52,106 @@ export class SingupComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.getPaises();
+  }
+
+  getPaises() {
+
+    this.prestamosService.getPaises().then((res) => {
+      if(res){
+        if(res.success){
+          this.paises = res.data;
+        }else{
+          this.alertService.danger(res.message);
+        }
+      }else{
+        this.alertService.error("Error de conexión")
+      }
+    });
+
+  }
+
+  paisonchange(){
+    this.prestamosService.getEstados(this.registerForm.value.direccion.pais).then((res) => {
+      if(res){
+        if(res.success){
+          this.estados = res.data;
+        }else{
+          this.alertService.danger(res.message);
+        }
+      }else{
+        this.alertService.error("Error de conexión")
+      }
+    })
+
+  }
+
+  estadoonchange(){
+
+    this.prestamosService.getMunicipio(this.registerForm.value.direccion.estado).then((res) => {
+      if(res){
+        if(res.success){
+          this.municipios = res.data;
+        }else{
+          this.alertService.danger(res.message);
+        }
+      }else{
+        this.alertService.error("Error de conexión")
+      }
+    })
+
+  }
+
+
   onSubmit() {
     if (this.registerForm.valid) {
+      this.sendingRegister = true;
+      const {
+        email,
+        nombre,
+        apellidoPaterno,
+        apellidoMaterno,
+        telefono,
+        password,
+        direccion: { calle, codigoPostal, noInt, noExt, colonia, municipio, estado, pais }
+      } = this.registerForm.value;
+
+      let usrInfo = JSON.parse(sessionStorage.getItem('usuario')!);
+      if(usrInfo && Object.hasOwn(usrInfo, 'usuario')){
+        this.prestamosService.sendRegistro({
+          usuario: usrInfo.usuario,
+          password: usrInfo.contrasena,
+          nombre: nombre,
+          correo: email,
+          apellidomaterno: apellidoMaterno,
+          apellidopaterno: apellidoPaterno,
+          telefono: telefono,
+          contrasena: password,
+          calle: calle,
+          cp: codigoPostal,
+          noext: noExt,
+          noint: noInt,
+          colonia: colonia,
+          idmunicipio: municipio
+        } as Registro).then((res) => {
+          if(res){
+            if(res.success){
+              this.alertService.success(res.message);
+              this.registerForm.reset();
+            }else{
+              this.alertService.danger(res.message);
+            }
+          }else{
+            this.alertService.error("Error de conexión")
+          }
+        }).finally(()=>{{
+          this.sendingRegister = false;
+        }});
+
+      }
+
+
       console.log('Formulario enviado:', this.registerForm.value);
     } else {
       console.log('Formulario inválido');

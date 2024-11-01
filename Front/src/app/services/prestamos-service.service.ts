@@ -25,6 +25,72 @@ export class PrestamosServiceService {
     })
     return data;
   }
+
+  async getPaises():Promise<resultado<Pais[]> | undefined>{
+    let data:resultado<Pais[]>|undefined = undefined;
+    await this.httpClient.get(this.baseurl + 'get/pais').forEach((res) => {
+      data = <resultado<Pais[]>> res;
+    })
+    return data;
+  }
+
+  async getEstados(idpais:number):Promise<resultado<Estado[]> | undefined>{
+    let data:resultado<Estado[]>|undefined = undefined;
+    await this.httpClient.get(this.baseurl + 'get/estados/' + idpais).forEach((res) => {
+      data = <resultado<Estado[]>> res;
+    })
+    return data;
+  }
+
+  async getMunicipio(idestado:number):Promise<resultado<Municipio[]> | undefined>{
+    let data:resultado<Municipio[]>|undefined = undefined;
+    await this.httpClient.get(this.baseurl + 'get/municipios/' + idestado).forEach((res) => {
+      data = <resultado<Municipio[]>> res;
+    })
+    return data;
+  }
+
+  async sendRegistro(registro:Registro):Promise<resultado<null> | undefined>{
+    let data:resultado<null>|undefined = undefined;
+    await this.httpClient.post(this.baseurl + 'post/usuario', registro).forEach((res) => {
+      data = <resultado<null>> res;
+    });
+    return data;
+  }
+}
+
+export interface Registro{
+  usuario?:string
+  password?:string
+  nombre:string
+  apellidomaterno:string
+  apellidopaterno:string
+  telefono:string
+  correo:string
+  contrasena:string
+  calle:string
+  cp:number
+  noint:number
+  noext:number
+  colonia:string
+  idmunicipio:number
+}
+
+export interface Pais{
+  idpais:number
+  nombre:string
+}
+
+export interface Estado{
+  idestado:number
+  nombre:string
+  pais_idpais:number
+}
+
+export interface Municipio{
+  idmunicipio:number
+  nombre:string
+  estado_idestado:number
 }
 
 interface Empleado{
