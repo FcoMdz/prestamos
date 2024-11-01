@@ -53,25 +53,29 @@ APP.post('/api/post/empleado',
         body('contrasena').not().isEmpty()
     ],
     async (req,res)=>{
-        try{
+      try{
+        const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
             let body = req.body;
             let contrasena = await genContrasena(body.contrasena)
             q = `INSERT INTO Empleado VALUES (NULL,?,?,?);`
             const data = await pool.query(q, [body.nombre, body.usuario, contrasena]);
             res.send({success:true, message: 'Empleado creado con éxito'})
         }catch(err){
-            res.send({success: false, message: err})
+            res.send({success: false, message: String(err)})
         }
     }
 )
 
 APP.post('/api/post/login/empleado',
     [
-        body('usuario').not().isEmpty().isAlpha(),
+        body('usuario').not().isEmpty(),
         body('contrasena').not().isEmpty()
     ],
     async (req,res)=>{
         try{
+          const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
             let body = req.body;
             let comprobacion = await revContrasena(body.contrasena, body.usuario);
             if(comprobacion){
@@ -83,7 +87,7 @@ APP.post('/api/post/login/empleado',
             }
             
         }catch(err){
-            res.send({success: false, message: err})
+            res.send({success: false, message: String(err)})
         }
     }
 )
@@ -91,11 +95,13 @@ APP.post('/api/post/login/empleado',
 
 APP.post('/api/post/login/usuario',
     [
-        body('correo').not().isEmpty().isAlpha(),
+        body('correo').not().isEmpty().isEmail(),
         body('contrasena').not().isEmpty()
     ],
     async (req,res)=>{
         try{
+          const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
             let body = req.body;
             let comprobacion = await revContrasenaUsuario(body.contrasena, body.correo);
             if(comprobacion){
@@ -107,7 +113,7 @@ APP.post('/api/post/login/usuario',
             }
             
         }catch(err){
-            res.send({success: false, message: err})
+            res.send({success: false, message: String(err)})
         }
     }
 )
@@ -126,6 +132,8 @@ APP.post('/api/post/prestamo',
         const conexion = await pool.getConnection();
        
         try{
+          const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
             let body = req.body;
             let comprobacion = await revContrasena(body.contrasena, body.usuario_empleado);
             if(comprobacion){
@@ -148,7 +156,7 @@ APP.post('/api/post/prestamo',
             }
         }catch(err){
             conexion.release();
-            res.send({success: false, message: err})
+            res.send({success: false, message: String(err)})
         }
     }
 )
@@ -163,6 +171,8 @@ APP.post('/api/post/arpovar/prestamo',
         const conexion = await pool.getConnection();
        
         try{
+          const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
             let body = req.body;
             let comprobacion = await revContrasena(body.contrasena, body.usuario_empleado);
             if(comprobacion){
@@ -182,7 +192,7 @@ APP.post('/api/post/arpovar/prestamo',
             }
         }catch(err){
             conexion.release();
-            res.send({success: false, message: err})
+            res.send({success: false, message: String(err)})
         }
     }
 )
@@ -206,6 +216,8 @@ APP.post('/api/post/usuario',
     async (req,res)=>{
         const conexion = await pool.getConnection();
         try{
+          const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
             let body = req.body;
             let contrasena = await genContrasena(body.contrasena)
             console.log(contrasena)
@@ -222,7 +234,7 @@ APP.post('/api/post/usuario',
             res.send({success:true, message: 'Usuario creado con éxito'})
         }catch(err){
             conexion.release();
-            res.send({success: false, message: err})
+            res.send({success: false, message: String(err)})
         }
     }
 )
@@ -231,29 +243,35 @@ APP.post('/api/post/usuario',
 
 APP.get('/api/get/estados',async (req,res)=>{
     try{
+      const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
         const data = await pool.query('SELECT * FROM Estado');
         res.send({success:true, message: "Datos recuperados con éxito", data: data[0]})
     }catch(err){
-        res.send({success:false, message: "Datos recuperados con éxito", data: err})
+        res.send({success:false, message: String(err)})
     }
     
 })
 
 APP.get('/api/get/municipio',async (req,res)=>{
     try{
+      const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
         const data = await pool.query('SELECT * FROM Municipio');
         res.send({success:true, message: "Datos recuperados con éxito", data: data[0]})
     }catch(err){
-        res.send({success:false, message: "Datos recuperados con éxito", data: err})
+        res.send({success:false, message: "Datos recuperados con éxito", data: String(err)})
     }
 })
 
 APP.get('/api/get/pais',async (req,res)=>{
     try{
+      const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
         const data = await pool.query('SELECT * FROM Pais');
         res.send({success:true, message: "Datos recuperados con éxito", data: data[0]})
     }catch(err){
-        res.send({success:false, message: "Datos recuperados con éxito", data: err})
+        res.send({success:false, message: String(err)})
     }
 })
 
@@ -264,6 +282,8 @@ APP.post('/api/post/solicitudes',
     ]
     ,async (req,res)=>{
     try{
+      const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
         let body = req.body;
         let comprobacion = await revContrasenaUsuario(body.contrasena, body.correo);
         if(comprobacion){
@@ -273,7 +293,7 @@ APP.post('/api/post/solicitudes',
             res.send({success:true, message: "Datos recuperados con éxito", data: data[0]})
         }
     }catch(err){
-        res.send({success:false, message: "Datos recuperados con éxito", data: err})
+        res.send({success:false, message: String(err)})
     }
 })
 
