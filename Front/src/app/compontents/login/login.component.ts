@@ -46,6 +46,7 @@ export class LoginComponent {
         if(res){
           if(res.success){
             this.alertService.success(res.message);
+            sessionStorage.setItem('usuario', JSON.stringify(res.data));
           }else{
             this.alertService.danger(res.message);
           }
@@ -67,6 +68,7 @@ export class LoginComponent {
         if(res){
           if(res.success){
             this.alertService.success(res.message);
+            sessionStorage.setItem('usuario', JSON.stringify(res.data));
           }else{
             this.alertService.danger(res.message);
           }
