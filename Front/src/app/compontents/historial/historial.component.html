@@ -10,21 +10,32 @@
         </tr>
       </thead>
       <tbody class="table-body">
-        <tr *ngFor="let item of data">
-          <td>{{ item.fechaPeticion }}</td>
-          <td>{{ item.montoPedido | currency }}</td>
-          <td>
-            <span [class]="item.aprobado ? 'badge bg-success' : 'badge bg-danger'">
-              {{ item.aprobado ? 'Sí' : 'No' }}
-            </span>
-          </td>
-          <td>
-            <button class="btn btn-outline-info btn-sm" (click)="mostrarDetalles(item.detalles)">
-              Ver detalles
-            </button>
-          </td>
-        </tr>
+        @if(!this.loadingHistorial){
+          <tr *ngFor="let item of data">
+            <td>{{ item.fecha_solicitud | date }}</td>
+            <td>{{ item.monto| currency }}</td>
+            <td>
+              <span [class]="item.aprovado ? 'badge bg-success' : 'badge bg-danger'">
+                {{ item.aprovado ? 'Sí' : 'No' }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-outline-info btn-sm">
+                Ver detalles
+              </button>
+            </td>
+          </tr>
+        }@else {
+          <tr>
+            <td [colSpan]="4">
+              <div class="spinner-grow text-secondary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Cargando historial...
+            </td>
+          </tr>
+        }
+
       </tbody>
     </table>
   </div>
-  

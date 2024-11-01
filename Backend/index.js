@@ -121,7 +121,7 @@ APP.post('/api/post/login/usuario',
 
 APP.post('/api/post/prestamo',
     [
-        body('usuario_empleado').not().isEmpty().isAlpha(),
+        body('usuario_empleado').not().isEmpty(),
         body('contrasena').not().isEmpty(),
         body('usuario_cliente').not().isEmpty(),
         body('monto').not().isEmpty(),

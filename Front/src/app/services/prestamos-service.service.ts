@@ -57,6 +57,25 @@ export class PrestamosServiceService {
     });
     return data;
   }
+
+  async getHistorial(correo:string, contrasena:string):Promise<resultado<Solicitud[]>|undefined>{
+    let data:resultado<Solicitud[]>|undefined = undefined;
+    await this.httpClient.post(this.baseurl + 'post/solicitudes', {correo: correo, contrasena: contrasena}).forEach((res) => {
+      data = <resultado<Solicitud[]>> res;
+    });
+    return data;
+  }
+}
+
+export interface Solicitud{
+  idsolicitud:number
+  monto:number
+  meses:number
+  interes:number
+  fecha_solicitud:Date
+  fecha_aprovado:Date
+  aprovado:boolean
+  empleado_idempleado:number
 }
 
 export interface Registro{
