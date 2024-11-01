@@ -30,7 +30,7 @@ export class PrestamosServiceService {
 interface Empleado{
   nombre:string
   usuario:string
-  contrsena:string
+  contrasena:string
 }
 
 interface Cliente{

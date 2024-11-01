@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Inject, Output, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PrestamosServiceService } from '../../services/prestamos-service.service';
 import { AlertService } from '../../services/alert.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,15 @@ import { AlertService } from '../../services/alert.service';
 export class LoginComponent {
   loginFormEmpleado: FormGroup;
   loginFormCliente: FormGroup;
-  constructor(private fb: FormBuilder, private prestamosService:PrestamosServiceService, private alertService:AlertService) {
+  loginEvent = new EventEmitter<void>();
+
+
+  constructor(
+    private fb: FormBuilder,
+    private prestamosService:PrestamosServiceService,
+    private alertService:AlertService,
+    @Inject(PLATFORM_ID) private platafomrId:any
+  ) {
     this.loginFormEmpleado = this.fb.group({
       username: ['', [Validators.required]],
       password: [
@@ -46,7 +55,10 @@ export class LoginComponent {
         if(res){
           if(res.success){
             this.alertService.success(res.message);
+            res.data.contrasena = password;
             sessionStorage.setItem('usuario', JSON.stringify(res.data));
+            this.loginEvent.emit();
+
           }else{
             this.alertService.danger(res.message);
           }
@@ -68,7 +80,9 @@ export class LoginComponent {
         if(res){
           if(res.success){
             this.alertService.success(res.message);
+            res.data.contrasena = password;
             sessionStorage.setItem('usuario', JSON.stringify(res.data));
+            this.loginEvent.emit();
           }else{
             this.alertService.danger(res.message);
           }
