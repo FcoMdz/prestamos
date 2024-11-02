@@ -43,29 +43,6 @@
           <button type="submit" class="btn btn-primary mt-4" [disabled]="calculoForm.invalid">Calcular</button>
         </form>
       </div>
-    </div>
-  
-    <!-- Tabla de Resultados -->
-    <div class="card mt-5" *ngIf="mostrarResultados">
-      <div class="card-header">
-        <h3>Resultados de los Cálculos</h3>
-      </div>
-      <div class="card-body">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Operación</th>
-              <th>Resultado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let resultado of resultados">
-              <td>{{ resultado.operacion }}</td>
-              <td>{{ resultado.resultado }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+    </div>  
+</div> 
 
