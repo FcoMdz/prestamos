@@ -15,8 +15,8 @@
             <td>{{ item.fecha_solicitud | date }}</td>
             <td>{{ item.monto| currency }}</td>
             <td>
-              <span [class]="item.aprobado ? 'badge bg-success' : 'badge bg-danger'">
-                {{ item.aprobado ? 'Sí' : 'No' }}
+              <span [class]="item.aprovado ? 'badge bg-success' : 'badge bg-danger'">
+                {{ item.aprovado ? 'Sí' : 'No' }}
               </span>
             </td>
             <td>
