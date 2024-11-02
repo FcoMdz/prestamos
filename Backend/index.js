@@ -150,7 +150,7 @@ APP.post('/api/post/prestamo',
                 q = `INSERT INTO usuario_solicitud VALUES (?,?)`;
                 let solicitud = await conexion.query(q, [idPrestamo, body.usuario_cliente]);
                 await conexion.commit();
-                res.send({success:true, message: 'Solicitud creada con éxito'})
+                res.send({success:true, message: 'Solicitud creada con éxito', data: solicitud[0].insertId})
             }else{
                 res.send({success:false, message: 'Usuario incorrecto, acceda al sistema para poder crear solicitudes'})
             }
