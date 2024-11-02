@@ -121,7 +121,7 @@ APP.post('/api/post/login/usuario',
 
 APP.post('/api/post/prestamo',
     [
-        body('usuario_empleado').not().isEmpty().isAlpha(),
+        body('usuario_empleado').not().isEmpty(),
         body('contrasena').not().isEmpty(),
         body('usuario_cliente').not().isEmpty(),
         body('monto').not().isEmpty(),
@@ -200,10 +200,12 @@ APP.post('/api/post/arpovar/prestamo',
 
 APP.post('/api/post/usuario',
     [
+        body('usuario').not().isEmpty(),
+        body('password').not().isEmpty(),
         body('nombre').not().isEmpty().isAlpha(),
         body('apellidomaterno').not().isEmpty().isAlpha(),
         body('apellidopaterno').not().isEmpty().isAlpha(),
-        body('telefono').not().isEmpty().isAlpha(),
+        body('telefono').not().isEmpty(),
         body('correo').not().isEmpty().isEmail(),
         body('contrasena').not().isEmail(),
         body('calle').not().isEmpty(),
@@ -219,21 +221,27 @@ APP.post('/api/post/usuario',
           const errors = validationResult(req);
         if(!errors.isEmpty()) errors.throw();
             let body = req.body;
-            let contrasena = await genContrasena(body.contrasena)
-            console.log(contrasena)
-            await conexion.beginTransaction()
-            q = `INSERT INTO Usuario VALUES (NULL,?,?,?,?,?,?);`
-            let usuario = await conexion.query(q, [body.nombre, body.apellidomaterno, body.apellidopaterno, contrasena, body.telefono, body.correo]);
-            let idUsuario = usuario[0].insertId;
-            q = `INSERT INTO Direccion VALUES (NULL, ?,?,?,?,?,?)`;
-            let domicilio = await conexion.query(q, [body.calle, body.cp, body.noint, body.noext, body.colonia, body.idmunicipio])
-            let idDomicilio = domicilio[0].insertId;
-            q = `INSERT INTO usuario_direccion VALUES (?,?)`;
-            let usuario_direccion = await conexion.query(q, [idUsuario, idDomicilio]);
-            await conexion.commit();
-            res.send({success:true, message: 'Usuario creado con éxito'})
+            let comprobacion = await revContrasena(body.password, body.usuario);
+            if(comprobacion){
+              let contrasena = await genContrasena(body.contrasena)
+              console.log(contrasena)
+              await conexion.beginTransaction()
+              q = `INSERT INTO Usuario VALUES (NULL,?,?,?,?,?,?);`
+              let usuario = await conexion.query(q, [body.nombre, body.apellidomaterno, body.apellidopaterno, contrasena, body.telefono, body.correo]);
+              let idUsuario = usuario[0].insertId;
+              q = `INSERT INTO Direccion VALUES (NULL, ?,?,?,?,?,?)`;
+              let domicilio = await conexion.query(q, [body.calle, body.cp, body.noint, body.noext, body.colonia, body.idmunicipio])
+              let idDomicilio = domicilio[0].insertId;
+              q = `INSERT INTO usuario_direccion VALUES (?,?)`;
+              let usuario_direccion = await conexion.query(q, [idUsuario, idDomicilio]);
+              await conexion.commit();
+              res.send({success:true, message: 'Usuario creado con éxito'})
+            }else{
+              res.send({success:false, message: 'Usuario incorrecto para realizar esta acción, acceda al sistema para poder registrar un usuario'})
+            }
         }catch(err){
             conexion.release();
+            console.log(err)
             res.send({success: false, message: String(err)})
         }
     }
@@ -241,11 +249,11 @@ APP.post('/api/post/usuario',
 
 
 
-APP.get('/api/get/estados',async (req,res)=>{
+APP.get('/api/get/estados/:pais',async (req,res)=>{
     try{
       const errors = validationResult(req);
         if(!errors.isEmpty()) errors.throw();
-        const data = await pool.query('SELECT * FROM Estado');
+        const data = await pool.query('SELECT * FROM Estado WHERE pais_idpais=?',[req.params.pais]);
         res.send({success:true, message: "Datos recuperados con éxito", data: data[0]})
     }catch(err){
         res.send({success:false, message: String(err)})
@@ -253,14 +261,14 @@ APP.get('/api/get/estados',async (req,res)=>{
     
 })
 
-APP.get('/api/get/municipio',async (req,res)=>{
+APP.get('/api/get/municipios/:estado',async (req,res)=>{
     try{
       const errors = validationResult(req);
         if(!errors.isEmpty()) errors.throw();
-        const data = await pool.query('SELECT * FROM Municipio');
+        const data = await pool.query('SELECT * FROM Municipio WHERE estado_idestado=?',[req.params.estado]);
         res.send({success:true, message: "Datos recuperados con éxito", data: data[0]})
     }catch(err){
-        res.send({success:false, message: "Datos recuperados con éxito", data: String(err)})
+        res.send({success:false, message: String(err)})
     }
 })
 

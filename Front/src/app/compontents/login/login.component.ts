@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Inject, Output, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PrestamosServiceService } from '../../services/prestamos-service.service';
 import { AlertService } from '../../services/alert.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,17 @@ import { AlertService } from '../../services/alert.service';
 export class LoginComponent {
   loginFormEmpleado: FormGroup;
   loginFormCliente: FormGroup;
-  constructor(private fb: FormBuilder, private prestamosService:PrestamosServiceService, private alertService:AlertService) {
+  loginEvent = new EventEmitter<void>();
+  loadingEmpleado:boolean = false;
+  loadingCliente:boolean = false;
+
+
+  constructor(
+    private fb: FormBuilder,
+    private prestamosService:PrestamosServiceService,
+    private alertService:AlertService,
+    @Inject(PLATFORM_ID) private platafomrId:any
+  ) {
     this.loginFormEmpleado = this.fb.group({
       username: ['', [Validators.required]],
       password: [
@@ -41,12 +52,16 @@ export class LoginComponent {
 
   onSubmitEmpleado() {
     if (this.loginFormEmpleado.valid) {
+      this.loadingEmpleado = true;
       const { username, password } = this.loginFormEmpleado.value;
       this.prestamosService.loginEmpleado(username, password).then((res) => {
         if(res){
           if(res.success){
             this.alertService.success(res.message);
+            res.data.contrasena = password;
             sessionStorage.setItem('usuario', JSON.stringify(res.data));
+            this.loginEvent.emit();
+
           }else{
             this.alertService.danger(res.message);
           }
@@ -54,6 +69,8 @@ export class LoginComponent {
           this.alertService.error("Error de conexión")
         }
 
+      }).finally(()=>{
+        this.loadingEmpleado = false;
       });
 
     } else {
@@ -64,11 +81,14 @@ export class LoginComponent {
   onSubmitCliente() {
     if (this.loginFormCliente.valid) {
       const { username, password } = this.loginFormCliente.value;
+      this.loadingCliente = true;
       this.prestamosService.loginCliente(username, password).then((res) => {
         if(res){
           if(res.success){
             this.alertService.success(res.message);
+            res.data.contrasena = password;
             sessionStorage.setItem('usuario', JSON.stringify(res.data));
+            this.loginEvent.emit();
           }else{
             this.alertService.danger(res.message);
           }
@@ -76,6 +96,8 @@ export class LoginComponent {
           this.alertService.error("Error de conexión")
         }
 
+      }).finally(()=>{
+        this.loadingCliente = false;
       });
     } else {
       this.alertService.danger("Es necesario completar los campos correctamente antes de continuar")

@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
+import { PrestamosServiceService, Solicitud } from '../../services/prestamos-service.service';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-historial',
@@ -9,29 +11,38 @@ import Swal from 'sweetalert2';
   templateUrl: './historial.component.html',
   styleUrl: './historial.component.scss'
 })
-export class HistorialComponent {
-  data = [
-    {
-      fechaPeticion: '2024-10-20',
-      montoPedido: 5000,
-      aprobado: true,
-      detalles: [
-        { concepto: 'Producto A', cantidad: 2, precio: 2500 },
-        { concepto: 'Producto B', cantidad: 1, precio: 2500 }
-      ]
-    },
-    {
-      fechaPeticion: '2024-10-21',
-      montoPedido: 7500,
-      aprobado: false,
-      detalles: [
-        { concepto: 'Producto C', cantidad: 3, precio: 2500 }
-      ]
-    },
-    // Agrega más datos según sea necesario
-  ];
+export class HistorialComponent implements OnInit{
+  data:Solicitud[] = [];
+  loadingHistorial:boolean = false;
+  constructor(private prestamosServices:PrestamosServiceService, private alertService:AlertService){}
 
-  mostrarDetalles(detalles: any[]) {
+  ngOnInit(): void {
+    this.obtenerHistorial();
+  }
+
+  obtenerHistorial(){
+    let usrInfo = JSON.parse(sessionStorage.getItem('usuario')!);
+    if(usrInfo && Object.hasOwn(usrInfo, 'correo')){
+      this.loadingHistorial = true;
+      this.prestamosServices.getHistorial(usrInfo.correo, usrInfo.contrasena).then((res) => {
+        if(res){
+          console.log(res);
+          if(res.success){
+            this.data = res.data;
+          }else{
+            this.alertService.danger(res.message);
+          }
+        }else{
+          this.alertService.error("Error de conexión")
+        }
+      }).finally(() => {
+        this.loadingHistorial = false;
+      });
+    }
+
+  }
+
+  /*mostrarDetalles(detalles: any[]) {
     const detallesHtml = `
       <table class="table">
         <thead>
@@ -63,5 +74,5 @@ export class HistorialComponent {
       confirmButtonText: 'Cerrar',
       width: '600px'
     });
-  }
+  }*/
 }
