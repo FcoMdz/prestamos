@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { PrestamosServiceService } from '../../services/prestamos-service.service';
 
 @Component({
   selector: 'app-cotizacion',
@@ -14,7 +15,10 @@ export class CotizacionComponent {
   calculoForm: FormGroup;
   resultados: Array<any> = [];
   mostrarResultados: boolean = false;
-  constructor(private fb: FormBuilder) {
+  empleado:any;
+  constructor(private fb: FormBuilder,
+    private prestamosService:PrestamosServiceService,
+  ) {
     this.calculoForm = this.fb.group({
       monto: ['', Validators.required],
       meses: ['', Validators.required],
@@ -27,6 +31,7 @@ export class CotizacionComponent {
     this.resultados = [];
     let intereses = 0; 
     let subtotal = 0;
+    
     if (this.calculoForm.valid) {
       const monto = this.calculoForm.value["monto"];
       const porcentaje = this.calculoForm.value["interes"]/100;
@@ -39,6 +44,16 @@ export class CotizacionComponent {
       console.log("cuota", pagoMes)
       console.log("interes", subtotalMes)
       console.log("capital", interesMes)
+      let solicitud = {
+        monto:monto,
+        meses:mes,
+        interes:porcentaje,
+        aprobado:false,
+        usuario_cliente:0,
+        contrasena:0,
+        usuario_empleado:0
+      }
+      //this.prestamosService.sendSolicitud(solicitud)
       // Realizar cálculos aquí y almacenarlos en la tabla de resultados
       var saldo = subtotal;
       for(let i=0; i<mes;i++){

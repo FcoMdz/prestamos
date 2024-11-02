@@ -161,7 +161,7 @@ APP.post('/api/post/prestamo',
     }
 )
 
-APP.post('/api/post/arpovar/prestamo',
+APP.post('/api/post/aprobar/prestamo',
     [
         body('usuario_empleado').not().isEmpty().isAlpha(),
         body('contrasena').not().isEmpty(),

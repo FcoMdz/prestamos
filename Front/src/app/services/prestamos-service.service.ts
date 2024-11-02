@@ -65,6 +65,16 @@ export class PrestamosServiceService {
     });
     return data;
   }
+  
+  async sendSolicitud(soli:Solicitud):Promise<resultado<null>|undefined>{
+    let monto = soli.monto;
+    let usuarioEmpleado = soli.empleado_idempleado;
+    let data:resultado<null>|undefined = undefined;
+    await this.httpClient.post(this.baseurl + 'post/prestamo',{}).forEach((res) => {
+      data = <resultado<null>> res;
+    });
+    return data;
+  }
 }
 
 export interface Solicitud{
@@ -74,7 +84,7 @@ export interface Solicitud{
   interes:number
   fecha_solicitud:Date
   fecha_aprovado:Date
-  aprovado:boolean
+  aprobado:boolean
   empleado_idempleado:number
 }
 
