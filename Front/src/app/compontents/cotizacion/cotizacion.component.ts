@@ -51,10 +51,6 @@ export class CotizacionComponent {
       const pagoMes = subtotal / mes; 
       const subtotalMes = monto/mes;
       const interesMes = pagoMes - subtotalMes;
-      console.log("cuota", pagoMes)
-      console.log("interes", subtotalMes)
-      console.log("capital", interesMes)
-      
       //this.prestamosService.sendSolicitud(solicitud)
       // Realizar cálculos aquí y almacenarlos en la tabla de resultados
       var saldo = subtotal;
