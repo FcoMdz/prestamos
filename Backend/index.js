@@ -10,6 +10,7 @@ const pool = require('./sql/connection');
 const PORT = 3002;
 const APP = express();
 APP.use(compression());
+APP.use(cors());
 APP.use(express.urlencoded({extended:false}));
 APP.use(express.json());
 
@@ -150,7 +151,7 @@ APP.post('/api/post/prestamo',
                 q = `INSERT INTO usuario_solicitud VALUES (?,?)`;
                 let solicitud = await conexion.query(q, [idPrestamo, body.usuario_cliente]);
                 await conexion.commit();
-                res.send({success:true, message: 'Solicitud creada con éxito'})
+                res.send({success:true, message: 'Prestamo creado con éxito', data: idPrestamo})
             }else{
                 res.send({success:false, message: 'Usuario incorrecto, acceda al sistema para poder crear solicitudes'})
             }
@@ -163,7 +164,7 @@ APP.post('/api/post/prestamo',
 
 APP.post('/api/post/aprobar/prestamo',
     [
-        body('usuario_empleado').not().isEmpty().isAlpha(),
+        body('usuario_empleado').not().isEmpty(),
         body('contrasena').not().isEmpty(),
         body('id_solicitud').not().isEmpty()
     ],
@@ -186,11 +187,12 @@ APP.post('/api/post/aprobar/prestamo',
                 formatDate = formatDate.split('T')[0]
                 let prestamo = await conexion.query(q, [formatDate, body.id_solicitud]);
                 await conexion.commit();
-                res.send({success:true, message: 'Solicitud aprovada con éxito'})
+                res.send({success:true, message: 'Prestamo aprobado con éxito'})
             }else{
                 res.send({success:false, message: 'Usuario incorrecto, acceda al sistema para poder crear solicitudes'})
             }
         }catch(err){
+            console.log(err)
             conexion.release();
             res.send({success: false, message: String(err)})
         }
@@ -282,6 +284,29 @@ APP.get('/api/get/pais',async (req,res)=>{
         res.send({success:false, message: String(err)})
     }
 })
+
+APP.post('/api/post/usuarios',
+    [
+        body('usuario').not().isEmpty(),
+        body('contrasena').not().isEmpty()
+    ]
+    ,async (req,res)=>{
+    try{
+      const errors = validationResult(req);
+        if(!errors.isEmpty()) errors.throw();
+        let body = req.body;
+        let comprobacion = await revContrasena(body.contrasena, body.usuario);
+        if(comprobacion){
+            const data = await pool.query('SELECT * FROM Usuario');
+            res.send({success:true, message: "Datos recuperados con éxito", data: data[0]})
+        }else{
+            res.send({success:false, message: "Usuario inválido para esta acción, inicie sesión"})
+        }
+    }catch(err){
+        res.send({success:false, message: String(err)})
+    }
+})
+
 
 APP.post('/api/post/solicitudes',
     [

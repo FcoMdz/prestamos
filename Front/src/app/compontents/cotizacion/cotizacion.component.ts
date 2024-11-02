@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { PrestamosServiceService } from '../../services/prestamos-service.service';
+import { PrestamosServiceService, Cliente } from '../../services/prestamos-service.service';
+import { AlertService } from '../../services/alert.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-cotizacion',
@@ -14,16 +16,24 @@ import { PrestamosServiceService } from '../../services/prestamos-service.servic
 export class CotizacionComponent {
   calculoForm: FormGroup;
   resultados: Array<any> = [];
+  clientes: Cliente[] = [];
   mostrarResultados: boolean = false;
+  loadingClientes: boolean = false;
+  loadingSolicitud:boolean = false;
+  solicitudId:number|undefined = undefined
   empleado:any;
   constructor(private fb: FormBuilder,
     private prestamosService:PrestamosServiceService,
+    private alertService:AlertService,
+    @Inject(PLATFORM_ID) private plataformid:any
   ) {
     this.calculoForm = this.fb.group({
       monto: ['', Validators.required],
       meses: ['', Validators.required],
-      interes: ['', Validators.required]
+      interes: ['', Validators.required],
+      cliente: ['', Validators.required]
     });
+    this.getClientes();
   }
 
   // Método para procesar el formulario y realizar cálculos
@@ -44,15 +54,7 @@ export class CotizacionComponent {
       console.log("cuota", pagoMes)
       console.log("interes", subtotalMes)
       console.log("capital", interesMes)
-      let solicitud = {
-        monto:monto,
-        meses:mes,
-        interes:porcentaje,
-        aprobado:false,
-        usuario_cliente:0,
-        contrasena:0,
-        usuario_empleado:0
-      }
+      
       //this.prestamosService.sendSolicitud(solicitud)
       // Realizar cálculos aquí y almacenarlos en la tabla de resultados
       var saldo = subtotal;
@@ -65,6 +67,34 @@ export class CotizacionComponent {
       this.mostrarTablaResultados(); // Mostrar la tabla de resultados
     }
   }
+
+
+
+
+  getClientes(){
+    if(isPlatformBrowser(this.plataformid)){
+      let usrInfo = JSON.parse(sessionStorage.getItem('usuario')!);
+      if(usrInfo && Object.hasOwn(usrInfo, 'usuario')){
+        this.loadingClientes = true;
+        this.prestamosService.getClientes(usrInfo.usuario, usrInfo.contrasena).then((res) => {
+          if(res){
+            if(res.success){
+              this.clientes = res.data;
+            }else{
+              this.alertService.danger(res.message);
+            }
+          }else{
+            this.alertService.error("Error de conexión")
+          }
+        }).finally(() => {
+          this.loadingClientes = false;
+        });
+      }
+    }
+    
+  }
+
+
   mostrarTablaResultados() {
     Swal.fire({
       title: 'Amortización',
@@ -77,10 +107,12 @@ export class CotizacionComponent {
       focusConfirm: false,
       allowOutsideClick:false,
       confirmButtonText: 'Guardar y Autorizar',
+      showDenyButton: true,
+      denyButtonText: 'Guardar',
       showCancelButton: true,
-      cancelButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
       preConfirm: () => this.autorizar(),  // Llama a la función al confirmar
-      didClose: () => this.guardar() 
+      preDeny: () => this.guardar()
     });
   }
   modalAmortizacion(){
@@ -134,10 +166,71 @@ export class CotizacionComponent {
         </div>`;
   }
 
-  autorizar(){
-
+  async autorizar(){
+    if(!this.loadingSolicitud){
+      await this.guardar();
+      this.alertService.danger("Guardando y autorizando prestamo")
+      let usrInfo = JSON.parse(sessionStorage.getItem('usuario')!);
+      if(usrInfo && Object.hasOwn(usrInfo, 'usuario')){
+        this.loadingSolicitud = true;
+        let solicitud = {
+          usuario_empleado: usrInfo.usuario,
+          contrasena:usrInfo.contrasena,
+          id_solicitud: this.solicitudId ?? null
+        }
+        this.prestamosService.aproveSolicitud(solicitud).then((res) => {
+          if(res){
+            if(res.success){
+              this.alertService.success(res.message);
+            }else{
+              this.alertService.danger(res.message);
+            }
+          }else{
+            this.alertService.error("Error de conexión")
+          }
+        }).finally(() => {
+          this.loadingSolicitud = false;
+          this.solicitudId = undefined;
+        });
+      }
+    }
+    
   }
-  guardar(){
 
+  async guardar(){
+    if(!this.loadingSolicitud){
+      this.alertService.danger("Guardando prestamo sin autorizar...")
+      const monto = this.calculoForm.value["monto"];
+      const porcentaje = this.calculoForm.value["interes"]/100;
+      const mes = this.calculoForm.value["meses"]
+      let usrInfo = JSON.parse(sessionStorage.getItem('usuario')!);
+          if(usrInfo && Object.hasOwn(usrInfo, 'usuario')){
+            this.loadingSolicitud = true;
+            let solicitud = {
+              monto:monto,
+              meses:mes,
+              interes:porcentaje,
+              usuario_cliente:this.calculoForm.value["cliente"],
+              contrasena:usrInfo.contrasena,
+              usuario_empleado:usrInfo.usuario
+            }
+            await this.prestamosService.sendSolicitud(solicitud).then((res) => {
+              if(res){
+                if(res.success){
+                  this.alertService.success(res.message + " no. " + res.data);
+                  this.solicitudId = res.data;
+                }else{
+                  this.alertService.danger(res.message);
+                }
+              }else{
+                this.alertService.error("Error de conexión")
+              }
+            }).finally(() => {
+              this.loadingSolicitud = false;
+            });
+        
+        }
+    }
+    
   }
 }

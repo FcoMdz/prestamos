@@ -41,7 +41,6 @@ export class NavbarComponent implements OnInit, OnDestroy{
 
   async obtenerSesion(){
     this.usrInfo = JSON.parse(sessionStorage.getItem('usuario')!);
-    console.log(this.usrInfo)
     if(this.usrInfo == undefined){
       this.usuarioEmpleado = "na";
       return;

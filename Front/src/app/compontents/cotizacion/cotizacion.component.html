@@ -34,13 +34,35 @@
                     </div>
                 </div>
             </div>
+            
           </div>
-  
-          <div class="form-group mt-3">
-           
-          </div>
-  
-          <button type="submit" class="btn btn-primary mt-4" [disabled]="calculoForm.invalid">Calcular</button>
+          @if(this.clientes.length > 0){
+
+            <div class="row">
+              <div class="col-12">
+                <div class="form-group mt-3">
+                  <label for="cliente">Cliente</label>
+                            <select id="cliente" class="form-control" formControlName="cliente">
+                                <option *ngFor="let cliente of clientes" [value]="cliente.idusuario">{{ cliente.nombre }} ({{cliente.correo}})</option>
+                            </select>
+                </div>
+              </div>
+              
+             </div>
+          }@else {
+            <div class="form-group mt-3">
+              <div class="spinner-grow text-secondary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Cargando clientes...
+            </div>
+          }
+          
+          
+          <button type="submit" class="btn btn-primary mt-4" [disabled]="calculoForm.invalid || loadingSolicitud">
+
+            Calcular
+          </button>
         </form>
       </div>
     </div>  

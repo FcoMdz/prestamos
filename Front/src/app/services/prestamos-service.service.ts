@@ -66,11 +66,25 @@ export class PrestamosServiceService {
     return data;
   }
   
-  async sendSolicitud(soli:Solicitud):Promise<resultado<null>|undefined>{
-    let monto = soli.monto;
-    let usuarioEmpleado = soli.empleado_idempleado;
+  async getClientes(usuario:string, contrasena:string):Promise<resultado<Cliente[]>|undefined>{
+    let data:resultado<Cliente[]>|undefined = undefined;
+    await this.httpClient.post(this.baseurl + 'post/usuarios', {usuario:usuario, contrasena: contrasena}).forEach((res) => {
+      data = <resultado<Cliente[]>> res;
+    });
+    return data;
+  }
+
+  async sendSolicitud(soli:any):Promise<resultado<number>|undefined>{
+    let data:resultado<number>|undefined = undefined;
+    await this.httpClient.post(this.baseurl + 'post/prestamo',soli).forEach((res) => {
+      data = <resultado<number>> res;
+    });
+    return data;
+  }
+
+  async aproveSolicitud(soli:any):Promise<resultado<null>|undefined>{
     let data:resultado<null>|undefined = undefined;
-    await this.httpClient.post(this.baseurl + 'post/prestamo',{}).forEach((res) => {
+    await this.httpClient.post(this.baseurl + 'post/aprobar/prestamo',soli).forEach((res) => {
       data = <resultado<null>> res;
     });
     return data;
@@ -84,7 +98,7 @@ export interface Solicitud{
   interes:number
   fecha_solicitud:Date
   fecha_aprovado:Date
-  aprobado:boolean
+  aprovado:boolean
   empleado_idempleado:number
 }
 
@@ -123,12 +137,14 @@ export interface Municipio{
 }
 
 interface Empleado{
+  idempleado:number
   nombre:string
   usuario:string
   contrasena:string
 }
 
-interface Cliente{
+export interface Cliente{
+  idusuario:number
   nombre:string
   apellido_materno:string
   apellido_paterno:string

@@ -26,7 +26,6 @@ export class HistorialComponent implements OnInit{
       this.loadingHistorial = true;
       this.prestamosServices.getHistorial(usrInfo.correo, usrInfo.contrasena).then((res) => {
         if(res){
-          console.log(res);
           if(res.success){
             this.data = res.data;
           }else{
