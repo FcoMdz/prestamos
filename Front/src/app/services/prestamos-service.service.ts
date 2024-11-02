@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 
 
 export class PrestamosServiceService {
-  private baseurl = "http://localhost:3002/api/";
+  private baseurl = "https://prestamos.femat.dev/api/";
   constructor(private httpClient:HttpClient) { }
 
   async loginEmpleado(usuario:string, contrasena:string):Promise<resultado<Empleado> | undefined>{
@@ -65,7 +65,7 @@ export class PrestamosServiceService {
     });
     return data;
   }
-  
+
   async getClientes(usuario:string, contrasena:string):Promise<resultado<Cliente[]>|undefined>{
     let data:resultado<Cliente[]>|undefined = undefined;
     await this.httpClient.post(this.baseurl + 'post/usuarios', {usuario:usuario, contrasena: contrasena}).forEach((res) => {

@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser, ɵPLATFORM_BROWSER_ID } from '@angular/common';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import Swal from 'sweetalert2';
 import { PrestamosServiceService, Solicitud } from '../../services/prestamos-service.service';
 import { AlertService } from '../../services/alert.service';
@@ -16,31 +16,36 @@ export class HistorialComponent implements OnInit{
   loadingHistorial:boolean = false;
 
   resultados: Array<any> = [];
-  constructor(private prestamosServices:PrestamosServiceService, private alertService:AlertService){}
+  constructor(
+    private prestamosServices:PrestamosServiceService,
+    private alertService:AlertService,
+    @Inject(PLATFORM_ID) private plataformid:any
+  ){}
 
   ngOnInit(): void {
     this.obtenerHistorial();
   }
 
   obtenerHistorial(){
-    let usrInfo = JSON.parse(sessionStorage.getItem('usuario')!);
-    if(usrInfo && Object.hasOwn(usrInfo, 'correo')){
-      this.loadingHistorial = true;
-      this.prestamosServices.getHistorial(usrInfo.correo, usrInfo.contrasena).then((res) => {
-        if(res){
-          if(res.success){
-            this.data = res.data;
+    if(isPlatformBrowser(this.plataformid)){
+      let usrInfo = JSON.parse(sessionStorage.getItem('usuario')!);
+      if(usrInfo && Object.hasOwn(usrInfo, 'correo')){
+        this.loadingHistorial = true;
+        this.prestamosServices.getHistorial(usrInfo.correo, usrInfo.contrasena).then((res) => {
+          if(res){
+            if(res.success){
+              this.data = res.data;
+            }else{
+              this.alertService.danger(res.message);
+            }
           }else{
-            this.alertService.danger(res.message);
+            this.alertService.error("Error de conexión")
           }
-        }else{
-          this.alertService.error("Error de conexión")
-        }
-      }).finally(() => {
-        this.loadingHistorial = false;
-      });
+        }).finally(() => {
+          this.loadingHistorial = false;
+        });
+      }
     }
-
   }
 
   mostrarDetalles(detalles: Solicitud) {
@@ -51,7 +56,7 @@ export class HistorialComponent implements OnInit{
     const mes = detalles.meses
     let intereses = monto*porcentaje;
     let subtotal = monto + intereses;
-    const pagoMes = subtotal / mes; 
+    const pagoMes = subtotal / mes;
     const subtotalMes = monto/mes;
     const interesMes = pagoMes - subtotalMes;
     var saldo = subtotal;
@@ -119,7 +124,7 @@ export class HistorialComponent implements OnInit{
                   <td>${resultado.saldo.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</td>
                 </tr>`).join('')}
             </tbody>
-          </table>      
+          </table>
         </div>`;
   }
 }
