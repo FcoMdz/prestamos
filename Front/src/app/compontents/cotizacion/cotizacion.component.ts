@@ -39,16 +39,16 @@ export class CotizacionComponent {
   // Método para procesar el formulario y realizar cálculos
   onSubmit() {
     this.resultados = [];
-    let intereses = 0; 
+    let intereses = 0;
     let subtotal = 0;
-    
+
     if (this.calculoForm.valid) {
       const monto = this.calculoForm.value["monto"];
       const porcentaje = this.calculoForm.value["interes"]/100;
       const mes = this.calculoForm.value["meses"]
       intereses = monto*porcentaje;
       subtotal = monto + intereses;
-      const pagoMes = subtotal / mes; 
+      const pagoMes = subtotal / mes;
       const subtotalMes = monto/mes;
       const interesMes = pagoMes - subtotalMes;
       //this.prestamosService.sendSolicitud(solicitud)
@@ -87,7 +87,7 @@ export class CotizacionComponent {
         });
       }
     }
-    
+
   }
 
 
@@ -158,7 +158,7 @@ export class CotizacionComponent {
                   <td>${resultado.saldo.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</td>
                 </tr>`).join('')}
             </tbody>
-          </table>      
+          </table>
         </div>`;
   }
 
@@ -190,14 +190,14 @@ export class CotizacionComponent {
         });
       }
     }
-    
+
   }
 
   async guardar(){
     if(!this.loadingSolicitud){
       this.alertService.danger("Guardando prestamo sin autorizar...")
       const monto = this.calculoForm.value["monto"];
-      const porcentaje = this.calculoForm.value["interes"]/100;
+      const porcentaje = this.calculoForm.value["interes"];
       const mes = this.calculoForm.value["meses"]
       let usrInfo = JSON.parse(sessionStorage.getItem('usuario')!);
           if(usrInfo && Object.hasOwn(usrInfo, 'usuario')){
@@ -224,9 +224,9 @@ export class CotizacionComponent {
             }).finally(() => {
               this.loadingSolicitud = false;
             });
-        
+
         }
     }
-    
+
   }
 }

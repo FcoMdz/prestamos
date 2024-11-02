@@ -1,0 +1,9 @@
+{
+  "routes": [
+    "/cotizacion",
+    "/historial",
+    "/home",
+    "/login",
+    "/signup"
+  ]
+}

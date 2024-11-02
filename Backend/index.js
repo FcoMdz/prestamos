@@ -3,7 +3,7 @@ const cors = require('cors');
 const compression = require('compression');
 const {body, validationResult} = require('express-validator')
 const bcrypt = require('bcrypt');
-
+const path = require('path');
 require('dotenv').config({path: __dirname+'/.env'});
 
 const pool = require('./sql/connection');
@@ -328,6 +328,12 @@ APP.post('/api/post/solicitudes',
     }catch(err){
         res.send({success:false, message: String(err)})
     }
+})
+
+APP.use(express.static(__dirname+'/dist/prestamos/browser'))
+
+APP.get('*', (req,res)=>{
+    res.status(200).sendFile(path.resolve(__dirname+'/dist/prestamos/browser/index.csr.html'));
 })
 
 
